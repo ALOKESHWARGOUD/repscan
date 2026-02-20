@@ -29,11 +29,15 @@ h4 {
 
 /* Professional Card System */
 .prof-card {
-    @apply bg-[#15171a] border border-[#24272b] rounded-xl transition-all duration-200;
+    background-color: #15171a;
+    border: 1px solid #24272b;
+    border-radius: 0.75rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .prof-card:hover {
-    @apply border-[#3b82f6]/30 shadow-lg shadow-black/40;
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
 }
 
 /* Minimalist Scrollbar */
@@ -51,17 +55,40 @@ h4 {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #3b82f640;
+    background: rgba(59, 130, 246, 0.25);
 }
 
 /* Data Table Styles */
 .data-row {
-    @apply flex items-center py-3 px-4 border-b border-[#24272b] last:border-0 hover:bg-white/[0.02] transition-colors;
+    display: flex;
+    items-center: center;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-bottom: 1px solid #24272b;
+    transition: background-color 0.2s;
+}
+
+.data-row:last-child {
+    border-bottom: 0;
+}
+
+.data-row:hover {
+    background-color: rgba(255, 255, 255, 0.02);
 }
 
 /* Status Indicators */
 .status-pill {
-    @apply px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .animate-pulse-subtle {

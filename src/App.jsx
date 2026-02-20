@@ -33,6 +33,7 @@ import {
 /* ================= CONFIG ================= */
 const KEYWORDS = ["Rowdy Janardhan"];
 const POLL_INTERVAL = 30000;
+const SYSTEM_UPLINK = "AIzaSyDVeg0LnHAFsdGxJ9PmYuQxKAUTODoJjl0"; // Hardcoded Backend Uplink
 
 /* ================= UTILS ================= */
 const formatSignalTime = (date) => {
@@ -62,7 +63,7 @@ export default function App() {
     const [activeKeyword, setActiveKeyword] = useState("Rowdy Janardhan");
     const [intelBrief, setIntelBrief] = useState(null);
     const [isGeneratingBrief, setIsGeneratingBrief] = useState(false);
-    const [apiKey, setApiKey] = useState(localStorage.getItem("REPSCAN_API_KEY") || "AIzaSyDVeg0LnHAFsdGxJ9PmYuQxKAUTODoJjl0");
+    const [apiKey, setApiKey] = useState(SYSTEM_UPLINK);
 
     const seenComments = useRef(new Set());
     const trackedVideos = useRef(new Set());
@@ -103,8 +104,9 @@ export default function App() {
         }
 
         try {
+            const currentKey = apiKey || SYSTEM_UPLINK;
             // STEP 1: Discover high-traffic videos for the keyword
-            const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(activeKeyword)}&type=video&maxResults=5&order=relevance&key=${apiKey}`;
+            const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(activeKeyword)}&type=video&maxResults=5&order=relevance&key=${currentKey}`;
             const searchRes = await fetch(searchUrl);
             const searchData = await searchRes.json();
 
@@ -115,7 +117,7 @@ export default function App() {
             // STEP 2: Scan comments from discovered videos
             let newItems = [];
             for (const videoId of Array.from(trackedVideos.current)) {
-                const cUrl = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId=${videoId}&maxResults=10&key=${apiKey}`;
+                const cUrl = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId=${videoId}&maxResults=10&key=${currentKey}`;
                 const cRes = await fetch(cUrl);
                 const cData = await cRes.json();
                 if (cData.error) continue;
@@ -151,7 +153,8 @@ export default function App() {
     }, [isScanning, isDemoMode, activeKeyword]);
 
     const generateTacticalBrief = useCallback(async () => {
-        if (isGeneratingBrief || intercepts.length === 0 || !apiKey) return;
+        if (isGeneratingBrief || intercepts.length === 0) return;
+        const currentKey = apiKey || SYSTEM_UPLINK;
         setIsGeneratingBrief(true);
         try {
             const negData = intercepts.filter(i => i.sentiment === "NEGATIVE").slice(0, 15).map(i => i.text).join(", ");
@@ -161,7 +164,7 @@ export default function App() {
             3. Suggest a professional 'Arctic' response strategy.
             Tone: High-level tactical intelligence. Brief and professional.`;
 
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${currentKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
