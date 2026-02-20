@@ -31,7 +31,7 @@ import {
 } from "recharts";
 
 /* ================= CONFIG ================= */
-const YOUTUBE_API_KEY = "AIzaSyCA0KAkj40B87YNQtmpTcHmoUEda-_kC7Y";
+const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY || "";
 const KEYWORDS = ["Rowdy Janardhan"];
 const POLL_INTERVAL = 30000;
 
