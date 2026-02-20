@@ -270,42 +270,68 @@ export default function App() {
                 {/* Clean Header */}
                 <header className="h-16 border-b border-[#24272b] bg-[#0b0c0e]/80 backdrop-blur-md px-8 flex items-center justify-between z-10">
                     <div className="flex items-center gap-4 flex-1">
-                        <div className="relative w-full max-w-sm">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        setActiveKeyword(searchQuery);
-                                        setIntercepts([]);
-                                        seenComments.current.clear();
-                                        trackedVideos.current.clear();
-                                        scanComments();
-                                    }
+                        <div className="relative w-full max-w-sm flex gap-2">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            setActiveKeyword(searchQuery);
+                                            setIntercepts([]);
+                                            seenComments.current.clear();
+                                            trackedVideos.current.clear();
+                                            scanComments();
+                                        }
+                                    }}
+                                    placeholder="Global scan keyword..."
+                                    className="w-full bg-[#15171a] border border-[#24272b] rounded-lg py-2 pl-10 pr-4 text-xs font-medium focus:border-blue-500 outline-none transition-all"
+                                />
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setActiveKeyword(searchQuery);
+                                    setIntercepts([]);
+                                    seenComments.current.clear();
+                                    trackedVideos.current.clear();
+                                    scanComments();
                                 }}
-                                placeholder="Global scan keyword..."
-                                className="w-full bg-[#15171a] border border-[#24272b] rounded-lg py-2 pl-10 pr-4 text-xs font-medium focus:border-blue-500 outline-none transition-all"
-                            />
+                                className="px-3 bg-blue-600/10 border border-blue-500/30 text-blue-500 text-[10px] font-bold rounded-lg hover:bg-blue-600 hover:text-white transition-all uppercase tracking-tight"
+                            >
+                                Enter
+                            </button>
                         </div>
-                        <div className="relative w-full max-w-[240px]">
-                            <ShieldCheck className={`absolute left-3 top-1/2 -translate-y-1/2 ${apiKey ? 'text-emerald-500' : 'text-slate-500'}`} size={16} />
-                            <input
-                                type="password"
-                                value={apiKey}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setApiKey(val);
-                                    localStorage.setItem("REPSCAN_API_KEY", val);
+
+                        <div className="relative w-full max-w-[240px] flex gap-2">
+                            <div className="relative flex-1">
+                                <ShieldCheck className={`absolute left-3 top-1/2 -translate-y-1/2 ${apiKey ? 'text-emerald-500' : 'text-slate-500'}`} size={16} />
+                                <input
+                                    type="password"
+                                    value={apiKey}
+                                    onChange={(e) => {
+                                        setApiKey(e.target.value);
+                                    }}
+                                    placeholder="Credentials (AIza...)"
+                                    className={`w-full bg-[#15171a] border ${apiKey ? 'border-emerald-500/30' : 'border-[#24272b]'} rounded-lg py-2 pl-10 pr-4 text-[10px] font-mono focus:border-emerald-500 outline-none transition-all`}
+                                />
+                            </div>
+                            <button
+                                onClick={() => {
+                                    localStorage.setItem("REPSCAN_API_KEY", apiKey);
+                                    alert("API_UPLINK: Credentials Applied");
                                 }}
-                                placeholder="Credentials Key (AIza...)"
-                                className={`w-full bg-[#15171a] border ${apiKey ? 'border-emerald-500/30' : 'border-[#24272b]'} rounded-lg py-2 pl-10 pr-4 text-[10px] font-mono focus:border-emerald-500 outline-none transition-all`}
-                            />
+                                title="Lock API Credentials"
+                                className="px-3 bg-emerald-600/10 border border-emerald-500/30 text-emerald-500 text-[10px] font-bold rounded-lg hover:bg-emerald-600 hover:text-white transition-all uppercase tracking-tight"
+                            >
+                                Apply
+                            </button>
                         </div>
-                        <div className="h-4 w-px bg-[#24272b]" />
-                        <div className="flex items-center gap-2 text-[10px] text-blue-500 font-bold uppercase tracking-widest bg-blue-500/10 px-3 py-1 rounded-md border border-blue-500/20">
-                            <span className="animate-pulse-subtle">Target: {activeKeyword}</span>
+
+                        <div className={`hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg border ${apiKey ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-red-500/10 border-red-500/20 text-red-500'}`}>
+                            <Wifi size={12} className={apiKey ? "animate-pulse" : ""} />
+                            <span className="text-[9px] font-black uppercase tracking-widest">{apiKey ? 'Uplink_Ready' : 'Link_Lost'}</span>
                         </div>
                     </div>
 
@@ -315,7 +341,7 @@ export default function App() {
                             <button onClick={() => setIsDemoMode(true)} className={`px-4 py-1.5 rounded-md text-[10px] font-bold transition-all ${isDemoMode ? 'bg-[#24272b] text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}>DEMO</button>
                         </div>
                         <button
-                            disabled={isGeneratingBrief}
+                            disabled={isGeneratingBrief || intercepts.length === 0}
                             onClick={generateTacticalBrief}
                             className="h-9 px-5 bg-amber-600 hover:bg-amber-500 text-black rounded-lg text-xs font-black transition-all flex items-center gap-2"
                         >
@@ -325,13 +351,16 @@ export default function App() {
                         <button
                             onClick={() => {
                                 setActiveKeyword(searchQuery);
+                                setIntercepts([]);
+                                seenComments.current.clear();
+                                trackedVideos.current.clear();
                                 scanComments();
                             }}
                             disabled={isScanning}
-                            className="h-9 px-5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-2 opacity-90 hover:opacity-100"
+                            className={`h-9 px-6 rounded-lg text-xs font-black transition-all flex items-center gap-2 ${isScanning ? 'bg-slate-800 text-slate-400' : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20'}`}
                         >
                             {isScanning ? <Activity className="animate-spin" size={14} /> : <TrendingUp size={14} />}
-                            Initialize Scan
+                            {isScanning ? "Scanning..." : "START SCAN"}
                         </button>
                     </div>
                 </header>
