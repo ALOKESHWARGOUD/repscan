@@ -62,7 +62,7 @@ export default function App() {
     const [activeKeyword, setActiveKeyword] = useState("Rowdy Janardhan");
     const [intelBrief, setIntelBrief] = useState(null);
     const [isGeneratingBrief, setIsGeneratingBrief] = useState(false);
-    const [apiKey, setApiKey] = useState(localStorage.getItem("REPSCAN_API_KEY") || "");
+    const [apiKey, setApiKey] = useState(localStorage.getItem("REPSCAN_API_KEY") || "AIzaSyDVeg0LnHAFsdGxJ9PmYuQxKAUTODoJjl0");
 
     const seenComments = useRef(new Set());
     const trackedVideos = useRef(new Set());
