@@ -62,7 +62,7 @@ export default function App() {
     const [activeKeyword, setActiveKeyword] = useState("Rowdy Janardhan");
     const [intelBrief, setIntelBrief] = useState(null);
     const [isGeneratingBrief, setIsGeneratingBrief] = useState(false);
-    const [apiKey, setApiKey] = useState(localStorage.getItem("JANARDHAN_API_KEY") || "");
+    const [apiKey, setApiKey] = useState(localStorage.getItem("REPSCAN_API_KEY") || "");
 
     const seenComments = useRef(new Set());
     const trackedVideos = useRef(new Set());
@@ -234,7 +234,7 @@ export default function App() {
                         <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
                             <ShieldCheck className="text-white" size={18} />
                         </div>
-                        <span className="font-bold text-lg tracking-tight text-white font-outfit uppercase">Janardhan</span>
+                        <span className="font-bold text-lg tracking-tight text-white font-outfit uppercase">RepScan</span>
                     </div>
                 </div>
 
@@ -297,7 +297,7 @@ export default function App() {
                                 onChange={(e) => {
                                     const val = e.target.value;
                                     setApiKey(val);
-                                    localStorage.setItem("JANARDHAN_API_KEY", val);
+                                    localStorage.setItem("REPSCAN_API_KEY", val);
                                 }}
                                 placeholder="Credentials Key (AIza...)"
                                 className={`w-full bg-[#15171a] border ${apiKey ? 'border-emerald-500/30' : 'border-[#24272b]'} rounded-lg py-2 pl-10 pr-4 text-[10px] font-mono focus:border-emerald-500 outline-none transition-all`}
