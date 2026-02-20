@@ -31,8 +31,8 @@ import {
 } from "recharts";
 
 /* ================= CONFIG ================= */
-const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY || "";
-const KEYWORDS = ["Rowdy Janardhan"];
+const YOUTUBE_API_KEY = "AIzaSyCA0KAkj40B87YNQtmpTcHmoUEda-_kC7Y";
+const ACTIVE_KEYWORD = "Rowdy Janardhan";
 const POLL_INTERVAL = 30000;
 
 /* ================= UTILS ================= */
@@ -57,10 +57,9 @@ const classifySentiment = (t) => {
 export default function App() {
     const [intercepts, setIntercepts] = useState([]);
     const [velocity, setVelocity] = useState([]);
+    const [intercepts, setIntercepts] = useState([]);
+    const [velocity, setVelocity] = useState([]);
     const [isScanning, setIsScanning] = useState(false);
-    const [isDemoMode, setIsDemoMode] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("Rowdy Janardhan");
-    const [activeKeyword, setActiveKeyword] = useState("Rowdy Janardhan");
     const [intelBrief, setIntelBrief] = useState(null);
     const [isGeneratingBrief, setIsGeneratingBrief] = useState(false);
 
@@ -74,30 +73,12 @@ export default function App() {
     }, []);
 
     const scanComments = useCallback(async () => {
-        if (isScanning && !isDemoMode) return;
+        if (isScanning) return;
         setIsScanning(true);
-
-        if (isDemoMode) {
-            const count = Math.floor(Math.random() * 3) + 1;
-            const newItems = Array.from({ length: count }, () => ({
-                id: Math.random().toString(36).substr(2, 9),
-                author: `Operator_${Math.floor(Math.random() * 999)}`,
-                sentiment: ["POSITIVE", "NEGATIVE", "NEUTRAL"][Math.floor(Math.random() * 3)],
-                text: `Dynamic signal matched for keyword: ${activeKeyword}`,
-                time: formatSignalTime(new Date()),
-                videoId: `SIM_VID_${Math.floor(Math.random() * 5)}`,
-                commentUrl: "#"
-            }));
-            setIntercepts((p) => [...newItems, ...p].slice(0, 40));
-            const rate = (Math.random() * 20 + 40).toFixed(1);
-            setVelocity((p) => [...p, { time: new Date().toLocaleTimeString(), pulse: +rate }].slice(-15));
-            setIsScanning(false);
-            return;
-        }
 
         try {
             // STEP 1: Discover high-traffic videos for the keyword
-            const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(activeKeyword)}&type=video&maxResults=5&order=relevance&key=${YOUTUBE_API_KEY}`;
+            const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(ACTIVE_KEYWORD)}&type=video&maxResults=5&order=relevance&key=${YOUTUBE_API_KEY}`;
             const searchRes = await fetch(searchUrl);
             const searchData = await searchRes.json();
 
@@ -148,7 +129,7 @@ export default function App() {
         setIsGeneratingBrief(true);
         try {
             const negData = intercepts.filter(i => i.sentiment === "NEGATIVE").slice(0, 15).map(i => i.text).join(", ");
-            const prompt = `Analyze these potential attacker signals for keyword "${activeKeyword}": [${negData}]. 
+            const prompt = `Analyze these potential attacker signals for keyword "${ACTIVE_KEYWORD}": [${negData}]. 
             1. Identify coordination patterns (Narrative clusters).
             2. Classify if this is an "Organized PR Attack" or "Organic Criticism".
             3. Suggest a professional 'Arctic' response strategy.
@@ -169,10 +150,10 @@ export default function App() {
     }, [intercepts, activeKeyword, isGeneratingBrief]);
 
     useEffect(() => {
-        const id = setInterval(scanComments, isDemoMode ? 5000 : POLL_INTERVAL);
-        if (!isDemoMode) scanComments();
+        const id = setInterval(scanComments, POLL_INTERVAL);
+        scanComments();
         return () => clearInterval(id);
-    }, [scanComments, isDemoMode]);
+    }, [scanComments]);
 
     const analytics = useMemo(() => {
         const neg = intercepts.filter(i => i.sentiment === "NEGATIVE").length;
@@ -260,57 +241,34 @@ export default function App() {
             {/* Main Content Area */}
             <main className="flex-1 flex flex-col h-screen overflow-hidden">
 
-                {/* Clean Header */}
                 <header className="h-16 border-b border-[#24272b] bg-[#0b0c0e]/80 backdrop-blur-md px-8 flex items-center justify-between z-10">
                     <div className="flex items-center gap-4 flex-1">
-                        <div className="relative w-full max-w-md">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        setActiveKeyword(searchQuery);
-                                        setIntercepts([]);
-                                        seenComments.current.clear();
-                                        trackedVideos.current.clear();
-                                        scanComments();
-                                    }
-                                }}
-                                placeholder="Enter keyword for global scan..."
-                                className="w-full bg-[#15171a] border border-[#24272b] rounded-lg py-2 pl-10 pr-4 text-xs font-medium focus:border-blue-500 outline-none transition-all"
-                            />
+                        <div className="flex items-center gap-3">
+                            <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                            <h2 className="text-xs font-black text-white uppercase tracking-[0.3em]">Monitoring: {ACTIVE_KEYWORD}</h2>
                         </div>
-                        <div className="h-4 w-px bg-[#24272b]" />
-                        <div className="flex items-center gap-2 text-[10px] text-blue-500 font-bold uppercase tracking-widest bg-blue-500/10 px-3 py-1 rounded-md border border-blue-500/20">
-                            <span className="animate-pulse-subtle">Target: {activeKeyword}</span>
+                        <div className="h-4 w-px bg-[#24272b] ml-4" />
+                        <div className="flex items-center gap-2 text-[9px] text-blue-500 font-bold uppercase tracking-widest bg-blue-500/5 px-2.5 py-1 rounded border border-blue-500/10">
+                            Secure_Uplink_Node: Alpha_01
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-6 ml-4">
-                        <div className="flex items-center gap-2 p-1 bg-[#15171a] border border-[#24272b] rounded-lg">
-                            <button onClick={() => setIsDemoMode(false)} className={`px-4 py-1.5 rounded-md text-[10px] font-bold transition-all ${!isDemoMode ? 'bg-[#24272b] text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}>LIVE</button>
-                            <button onClick={() => setIsDemoMode(true)} className={`px-4 py-1.5 rounded-md text-[10px] font-bold transition-all ${isDemoMode ? 'bg-[#24272b] text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}>DEMO</button>
-                        </div>
+                    <div className="flex items-center gap-4">
                         <button
                             disabled={isGeneratingBrief}
                             onClick={generateTacticalBrief}
-                            className="h-9 px-5 bg-amber-600 hover:bg-amber-500 text-black rounded-lg text-xs font-black transition-all flex items-center gap-2"
+                            className="h-8 px-4 bg-amber-600 hover:bg-amber-500 text-black rounded text-[10px] font-black transition-all flex items-center gap-2"
                         >
-                            {isGeneratingBrief ? <Activity className="animate-spin" size={14} /> : <ShieldAlert size={14} />}
-                            Generate Tactical Brief
+                            {isGeneratingBrief ? <Activity className="animate-spin" size={12} /> : <ShieldAlert size={12} />}
+                            TACTICAL_REPORT
                         </button>
                         <button
-                            onClick={() => {
-                                setActiveKeyword(searchQuery);
-                                scanComments();
-                            }}
+                            onClick={scanComments}
                             disabled={isScanning}
-                            className="h-9 px-5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-2 opacity-90 hover:opacity-100"
+                            className="h-8 px-4 bg-[#15171a] border border-[#24272b] hover:border-blue-500/50 text-slate-300 hover:text-white rounded text-[10px] font-black transition-all flex items-center gap-2"
                         >
-                            {isScanning ? <Activity className="animate-spin" size={14} /> : <TrendingUp size={14} />}
-                            Initialize Scan
+                            {isScanning ? <Activity className="animate-spin" size={12} /> : <TrendingUp size={12} />}
+                            ASYNC_SYNC
                         </button>
                     </div>
                 </header>
