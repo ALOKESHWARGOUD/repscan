@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --bg-main: #0b0c0e;
+    --bg-card: #15171a;
+    --border-color: #24272b;
+    --primary: #3b82f6;
+    --emerald: #10b981;
+    --danger: #ef4444;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Professional Card System */
+.prof-card {
+    @apply bg-[#15171a] border border-[#24272b] rounded-xl transition-all duration-200;
+}
+
+.prof-card:hover {
+    @apply border-[#3b82f6]/30 shadow-lg shadow-black/40;
+}
+
+/* Minimalist Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #24272b;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #3b82f640;
+}
+
+/* Data Table Styles */
+.data-row {
+    @apply flex items-center py-3 px-4 border-b border-[#24272b] last:border-0 hover:bg-white/[0.02] transition-colors;
+}
+
+/* Status Indicators */
+.status-pill {
+    @apply px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider;
+}
+
+.animate-pulse-subtle {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
